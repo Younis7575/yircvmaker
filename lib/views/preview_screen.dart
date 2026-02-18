@@ -1,0 +1,347 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'dart:io';
+import '../controllers/portfolio_controller.dart';
+import '../widgets/banner_ad_widget.dart';
+
+class PreviewScreen extends StatelessWidget {
+  const PreviewScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final controller = Get.find<PortfolioController>();
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Portfolio Preview'),
+        actions: [
+          Obx(() => IconButton(
+                icon: controller.isLoading
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Icon(Icons.picture_as_pdf),
+                onPressed: controller.isLoading
+                    ? null
+                    : () => controller.generateAndSharePdf(),
+                tooltip: 'Generate PDF',
+              )),
+        ],
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
+              child: Obx(() {
+                final profile = controller.profile;
+                if (profile == null) {
+                  return const Center(
+                    child: Text('Please fill in your profile first'),
+                  );
+                }
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Profile Header
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          children: [
+                            // Profile Image
+                            if (profile.profileImagePath != null &&
+                                profile.profileImagePath!.isNotEmpty)
+                              CircleAvatar(
+                                radius: 60,
+                                backgroundColor: Colors.grey[800],
+                                backgroundImage: FileImage(
+                                  File(profile.profileImagePath!),
+                                ),
+                              )
+                            else
+                              const CircleAvatar(
+                                radius: 60,
+                                backgroundColor: Colors.grey,
+                                child: Icon(Icons.person, size: 60),
+                              ),
+                            const SizedBox(height: 16),
+                            Text(
+                              profile.fullName ?? 'Your Name',
+                              style: const TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            if (profile.professionalTitle != null &&
+                                profile.professionalTitle!.isNotEmpty) ...[
+                              const SizedBox(height: 8),
+                              Text(
+                                profile.professionalTitle!,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey[400],
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // About Section
+                    if (profile.bio != null && profile.bio!.isNotEmpty) ...[
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'About Me',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                profile.bio!,
+                                style: const TextStyle(fontSize: 14),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+
+                    // Contact Information
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Contact Information',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            if (profile.email != null &&
+                                profile.email!.isNotEmpty)
+                              _buildContactItem(Icons.email, profile.email!),
+                            if (profile.phoneNumber != null &&
+                                profile.phoneNumber!.isNotEmpty)
+                              _buildContactItem(
+                                  Icons.phone, profile.phoneNumber!),
+                            if (profile.address != null &&
+                                profile.address!.isNotEmpty)
+                              _buildContactItem(
+                                  Icons.location_on, profile.address!),
+                            if (profile.website != null &&
+                                profile.website!.isNotEmpty)
+                              _buildContactItem(
+                                  Icons.language, profile.website!),
+                            if (profile.linkedin != null &&
+                                profile.linkedin!.isNotEmpty)
+                              _buildContactItem(
+                                  Icons.link, profile.linkedin!),
+                            if (profile.github != null &&
+                                profile.github!.isNotEmpty)
+                              _buildContactItem(Icons.code, profile.github!),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+
+                    // Skills Section
+                    if (controller.skills.isNotEmpty) ...[
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Skills',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: controller.skills.map((skill) {
+                                  return Chip(
+                                    label: Text(skill.name),
+                                    backgroundColor: Colors.grey[800],
+                                  );
+                                }).toList(),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+
+                    // Experience Section
+                    if (controller.experiences.isNotEmpty) ...[
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Experience',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              ...controller.experiences.map((exp) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 16),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        exp.jobTitle,
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        '${exp.companyName} | ${exp.duration}',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.grey[400],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        exp.description,
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }).toList(),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+
+                    // Projects Section
+                    if (controller.projects.isNotEmpty) ...[
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Projects',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              ...controller.projects.map((project) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 16),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        project.name,
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        'Technologies: ${project.technologies}',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.grey[400],
+                                        ),
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        project.description,
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                      if (project.projectLink != null &&
+                                          project.projectLink!.isNotEmpty) ...[
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          'Link: ${project.projectLink}',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.blue[300],
+                                          ),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                );
+                              }).toList(),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                );
+              }),
+            ),
+          ),
+          const BannerAdWidget(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContactItem(IconData icon, String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: Colors.grey[400]),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              text,
+              style: const TextStyle(fontSize: 14),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
