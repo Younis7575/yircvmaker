@@ -83,11 +83,63 @@ class HomeScreen extends StatelessWidget {
                       onTap: () => Get.toNamed('/experience'),
                     ),
                   ),
+                  const SizedBox(height: 12),
+
+                  // Education Card
+                  Card(
+                    child: ListTile(
+                      leading: const Icon(Icons.school, size: 32),
+                      title: const Text('Education'),
+                      subtitle: Text(
+                        '${controller.educations.length} education(s)',
+                      ),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => Get.toNamed('/education'),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Achievements Card
+                  Card(
+                    child: ListTile(
+                      leading: const Icon(Icons.emoji_events, size: 32),
+                      title: const Text('Achievements'),
+                      subtitle: Text(
+                        '${controller.achievements.length} achievement(s)',
+                      ),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => Get.toNamed('/achievements'),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Hobbies Card
+                  Card(
+                    child: ListTile(
+                      leading: const Icon(Icons.sports_esports, size: 32),
+                      title: const Text('Hobbies'),
+                      subtitle: Text(
+                        '${controller.hobbies.length} hobby(ies)',
+                      ),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => Get.toNamed('/hobbies'),
+                    ),
+                  ),
                   const SizedBox(height: 24),
 
                   // Preview Button
                   ElevatedButton.icon(
-                    onPressed: () => Get.toNamed('/preview'),
+                    onPressed: () {
+                      if (!controller.isProfileComplete()) {
+                        final message = controller.getProfileCompletenessMessage();
+                        Get.snackbar('Incomplete Profile', message ?? 'Please complete your profile',
+                            snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor: Colors.red,
+                            colorText: Colors.white);
+                        return;
+                      }
+                      Get.toNamed('/preview');
+                    },
                     icon: const Icon(Icons.preview),
                     label: const Text('Preview Portfolio'),
                     style: ElevatedButton.styleFrom(
@@ -100,7 +152,17 @@ class HomeScreen extends StatelessWidget {
                   Obx(() => ElevatedButton.icon(
                         onPressed: controller.isLoading
                             ? null
-                            : () => controller.generateAndSavePdf(),
+                            : () {
+                              if (!controller.isProfileComplete()) {
+                                final message = controller.getProfileCompletenessMessage();
+                                Get.snackbar('Incomplete Profile', message ?? 'Please complete your profile',
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    backgroundColor: Colors.red,
+                                    colorText: Colors.white);
+                                return;
+                              }
+                              Get.toNamed('/select-template');
+                            },
                         icon: controller.isLoading
                             ? const SizedBox(
                                 width: 20,
@@ -123,7 +185,17 @@ class HomeScreen extends StatelessWidget {
                   Obx(() => OutlinedButton.icon(
                         onPressed: controller.isLoading
                             ? null
-                            : () => controller.generateAndSharePdf(),
+                            : () {
+                              if (!controller.isProfileComplete()) {
+                                final message = controller.getProfileCompletenessMessage();
+                                Get.snackbar('Incomplete Profile', message ?? 'Please complete your profile',
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    backgroundColor: Colors.red,
+                                    colorText: Colors.white);
+                                return;
+                              }
+                              Get.toNamed('/select-template-share');
+                            },
                         icon: const Icon(Icons.share),
                         label: const Text('Share PDF'),
                         style: OutlinedButton.styleFrom(

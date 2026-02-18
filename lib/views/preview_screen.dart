@@ -28,7 +28,17 @@ class PreviewScreen extends StatelessWidget {
                     : const Icon(Icons.picture_as_pdf),
                 onPressed: controller.isLoading
                     ? null
-                    : () => controller.generateAndSharePdf(),
+                    : () {
+                      if (!controller.isProfileComplete()) {
+                        final message = controller.getProfileCompletenessMessage();
+                        Get.snackbar('Incomplete Profile', message ?? 'Please complete your profile',
+                            snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor: Colors.red,
+                            colorText: Colors.white);
+                        return;
+                      }
+                      Get.toNamed('/select-template-share');
+                    },
                 tooltip: 'Generate PDF',
               )),
         ],
@@ -253,6 +263,63 @@ class PreviewScreen extends StatelessWidget {
                       const SizedBox(height: 16),
                     ],
 
+                    // Education Section
+                    if (controller.educations.isNotEmpty) ...[
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Education',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              ...controller.educations.map((edu) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 16),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        edu.degree,
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        '${edu.institution} | ${edu.duration}',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: Colors.grey[400],
+                                        ),
+                                      ),
+                                      if (edu.description != null &&
+                                          edu.description!.isNotEmpty) ...[
+                                        const SizedBox(height: 8),
+                                        Text(
+                                          edu.description!,
+                                          style: const TextStyle(fontSize: 14),
+                                        ),
+                                      ],
+                                    ],
+                                  ),
+                                );
+                              }).toList(),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+
                     // Projects Section
                     if (controller.projects.isNotEmpty) ...[
                       Card(
@@ -311,6 +378,96 @@ class PreviewScreen extends StatelessWidget {
                                   ),
                                 );
                               }).toList(),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+
+                    // Achievements Section
+                    if (controller.achievements.isNotEmpty) ...[
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Achievements',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              ...controller.achievements.map((ach) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(bottom: 16),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        ach.title,
+                                        style: const TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      if (ach.date != null &&
+                                          ach.date!.isNotEmpty) ...[
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          ach.date!,
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.grey[400],
+                                          ),
+                                        ),
+                                      ],
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        ach.description,
+                                        style: const TextStyle(fontSize: 14),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }).toList(),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+
+                    // Hobbies Section
+                    if (controller.hobbies.isNotEmpty) ...[
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Hobbies',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: controller.hobbies.map((hobby) {
+                                  return Chip(
+                                    label: Text(hobby.name),
+                                    backgroundColor: Colors.grey[800],
+                                  );
+                                }).toList(),
+                              ),
                             ],
                           ),
                         ),
