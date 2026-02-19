@@ -1,3 +1,4 @@
+import 'package:cvmaker/views/my_downloads_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/portfolio_controller.dart';
@@ -15,6 +16,21 @@ class HomeScreen extends StatelessWidget {
         title: const Text('Portfolio Maker'),
         centerTitle: true,
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.download),
+            // onPressed: () => Get.to(() => MyDownloadsScreen()),
+              onPressed: () async {
+    try {
+      final controller = Get.find<PortfolioController>();
+      print('Testing PDF generation...');
+      await controller.generateAndSavePdf(templateNumber: 1);
+    } catch (e) {
+      print('Test failed: $e');
+    }
+  },
+          ),
+        ],
       ),
       body: Column(
         children: [

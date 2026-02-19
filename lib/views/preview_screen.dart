@@ -6,7 +6,7 @@ import '../widgets/banner_ad_widget.dart';
 
 class PreviewScreen extends StatelessWidget {
   const PreviewScreen({super.key});
-
+ 
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<PortfolioController>();
