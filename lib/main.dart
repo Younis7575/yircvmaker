@@ -1,9 +1,9 @@
+import 'package:cvmaker/views/bottombar/floating_bottom_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'controllers/portfolio_controller.dart';
-import 'views/home_screen.dart';
+import 'controllers/portfolio_controller.dart'; 
 import 'views/edit_profile_screen.dart';
 import 'views/skills_screen.dart';
 import 'views/projects_screen.dart';
@@ -130,7 +130,7 @@ class _PortfolioMakerAppState extends State<PortfolioMakerApp>
       ),
       initialRoute: '/',
       getPages: [
-        GetPage(name: '/', page: () => const HomeScreen()),
+        GetPage(name: '/', page: () =>   FloatingBottomExample()),
         GetPage(name: '/edit-profile', page: () => const EditProfileScreen()),
         GetPage(name: '/skills', page: () => const SkillsScreen()),
         GetPage(name: '/projects', page: () => const ProjectsScreen()),
