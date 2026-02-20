@@ -1,9 +1,8 @@
-import 'package:cvmaker/ads/ad_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../controllers/portfolio_controller.dart';
 import '../widgets/banner_ad_widget.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class TemplateSelectionScreen extends StatefulWidget {
   final bool isForShare;
@@ -16,30 +15,7 @@ class TemplateSelectionScreen extends StatefulWidget {
 }
 
 class _TemplateSelectionScreenState extends State<TemplateSelectionScreen> {
-  InterstitialAd? _interstitialAd;
-  bool _isAdLoaded = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadInterstitialAd();
-  }
-
-  void _loadInterstitialAd() {
-    InterstitialAd.load(
-      adUnitId: AdHelper.interstitialAdUnitId,
-      request: const AdRequest(),
-      adLoadCallback: InterstitialAdLoadCallback(
-        onAdLoaded: (ad) {
-          _interstitialAd = ad;
-          _isAdLoaded = true;
-        },
-        onAdFailedToLoad: (error) {
-          _isAdLoaded = false;
-        },
-      ),
-    );
-  }
+  // interstitial logic no longer used; preview uses a fake delay dialog
 
   @override
   Widget build(BuildContext context) {
@@ -47,163 +23,193 @@ class _TemplateSelectionScreenState extends State<TemplateSelectionScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Select PDF Template')),
-      body: Column(
-        children: [
-          Expanded(
-            child: GridView.builder(
-              padding: const EdgeInsets.all(16),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 16,
-                mainAxisSpacing: 16,
-                childAspectRatio: 0.85,
-              ),
-              itemCount: 5,
-              itemBuilder: (context, index) {
-                final templateNumber = index + 1;
-                return Obx(
-                  () => Card(
-                    elevation: controller.selectedTemplate == templateNumber
-                        ? 8
-                        : 2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      side: controller.selectedTemplate == templateNumber
-                          ? const BorderSide(color: Colors.blue, width: 2)
-                          : BorderSide.none,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Template Preview
-                        Expanded(
-                          flex: 3,
-                          child: Container(
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: _getTemplateColor(templateNumber),
-                              borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(12),
-                              ),
-                            ),
-                            child: Stack(
-                              children: [
-                                Center(
-                                  child: Icon(
-                                    _getTemplateIcon(templateNumber),
-                                    size: 48,
-                                    color: Colors.white,
-                                  ),
+      // reserve a fixed height for the banner so the body is always sized above it
+      bottomNavigationBar: SizedBox(
+        height: AdSize.banner.height.toDouble(),
+        child: const BannerAdWidget(),
+      ),
+      resizeToAvoidBottomInset: false,
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: GridView.builder(
+                padding: EdgeInsets.fromLTRB(
+                  16,
+                  16,
+                  16,
+                  16 + AdSize.banner.height.toDouble(),
+                ),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 24,
+                  mainAxisSpacing: 24,
+                  childAspectRatio: 0.8,
+                ),
+                itemCount: 5,
+                itemBuilder: (context, index) {
+                  final templateNumber = index + 1;
+                  return Obx(
+                    () => GestureDetector(
+                      behavior: HitTestBehavior.translucent,
+                      onTapDown: (_) => controller.setTemplate(templateNumber),
+                      child: Card(
+                        elevation: controller.selectedTemplate == templateNumber
+                            ? 8
+                            : 2,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          side: controller.selectedTemplate == templateNumber
+                              ? const BorderSide(color: Colors.blue, width: 2)
+                              : BorderSide.none,
+                        ),
+                        child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Template Preview
+                          Expanded(
+                            flex: 3,
+                            child: Container(
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: _getTemplateColor(templateNumber),
+                                borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(12),
                                 ),
-                                // Template number badge
-                                Positioned(
-                                  top: 8,
-                                  right: 8,
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
+                              ),
+                              child: Stack(
+                                children: [
+                                  Center(
+                                    child: Icon(
+                                      _getTemplateIcon(templateNumber),
+                                      size: 48,
+                                      color: Colors.white,
                                     ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.black.withOpacity(0.5),
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Text(
-                                      'Template $templateNumber',
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.bold,
+                                  ),
+                                  // Template number badge
+                                  Positioned(
+                                    top: 8,
+                                    right: 8,
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.black.withValues(alpha: 0.5),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+
+                                      child: Text(
+                                        'Template $templateNumber',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
-                        ),
 
-                        // Template Info
-                        Expanded(
-                          flex: 2,
-                          child: Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  _getTemplateName(templateNumber),
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
+                          // Template Info
+                          Expanded(
+                            flex: 2,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    _getTemplateName(templateNumber),
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  _getTemplateDescription(templateNumber),
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    color: Colors.grey[600],
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    _getTemplateDescription(templateNumber),
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: Colors.grey[600],
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const Spacer(),
+                                  const Spacer(),
 
-                                // Action Buttons
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    _buildActionButton(
-                                      icon: Icons.remove_red_eye,
-                                      label: 'Preview',
-                                      onTap: () {
-                                        _showAdThen(() {
-                                          _showTemplatePreview(
-                                            context,
-                                            templateNumber,
-                                            controller,
-                                          );
-                                        });
-                                      },
-                                    ),
-                                    Container(
-                                      height: 20,
-                                      width: 1,
-                                      color: Colors.grey[300],
-                                    ),
-                                    // In the action buttons section, replace the Download button with:
-                                    _buildActionButton(
-                                      icon: Icons.download,
-                                      label: 'Download',
-                                      onTap: () async {
-                                        try {
-                                          await controller.generateAndSavePdf(
-                                            templateNumber: templateNumber,
-                                          );
-                                        } catch (e) {
-                                          print('Download error: $e');
-                                        }
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                  // Action Buttons
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      _buildActionButton(
+                                        icon: Icons.remove_red_eye,
+                                        label: 'Preview',
+                                        onTap: () {
+                                          debugPrint('Preview tap on template $templateNumber');
+                                          controller.setTemplate(templateNumber);
+                                          _showAdThen(() {
+                                            debugPrint('Showing preview after ad');
+                                            _showTemplatePreview(
+                                              context,
+                                              templateNumber,
+                                              controller,
+                                            );
+                                          });
+                                        },
+                                      ),
+                                      Container(
+                                        height: 20,
+                                        width: 1,
+                                        color: Colors.grey[300],
+                                      ),
+                                      // In the action buttons section, replace the Download button with:
+                                      _buildActionButton(
+                                        icon: Icons.download,
+                                        label: 'Download',
+                                        onTap: () async {
+                                          debugPrint('Download tap on template $templateNumber');
+                                          try {
+                                            controller.setTemplate(templateNumber);
+                                            await controller.generateAndSavePdf(
+                                              templateNumber: templateNumber,
+                                            );
+                                            debugPrint('PDF generated successfully');
+                                          } catch (e) {
+                                            debugPrint('Download error: $e');
+                                            Get.snackbar(
+                                              'Error',
+                                              'Failed to generate PDF: $e',
+                                              snackPosition: SnackPosition.BOTTOM,
+                                              backgroundColor: Colors.red,
+                                              colorText: Colors.white,
+                                            );
+                                          }
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                );
-              },
+                  );
+                },
+              ),
             ),
-          ),
-          const BannerAdWidget(),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -241,213 +247,209 @@ class _TemplateSelectionScreenState extends State<TemplateSelectionScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
-        return Container(
-          height: MediaQuery.of(context).size.height * 0.85,
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        // wrap the whole sheet in a SafeArea so that the bottom padding
+        // (navigation bar / gesture area) doesn't cause an overflow.
+        return SafeArea(
+          child: FractionallySizedBox(
+            heightFactor: 0.85,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Template ${_getTemplateName(templateNumber)} Preview',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ],
-              ),
-              const Divider(),
-              const SizedBox(height: 16),
-
-              // Preview Content
-              Expanded(
-                child: SingleChildScrollView(
-                  child: Column(
+                  // Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Template Preview Card
-                      Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[100],
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey[300]!),
+                      Text(
+                        'Template ${_getTemplateName(templateNumber)} Preview',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            // Sample Header
-                            Row(
-                              children: [
-                                Container(
-                                  width: 50,
-                                  height: 50,
-                                  decoration: BoxDecoration(
-                                    color: _getTemplateColor(templateNumber),
-                                    shape: BoxShape.circle,
-                                  ),
-                                  child: const Center(
-                                    child: Icon(
-                                      Icons.person,
-                                      color: Colors.white,
-                                      size: 30,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        width: double.infinity,
-                                        height: 16,
-                                        color: Colors.grey[300],
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Container(
-                                        width: 100,
-                                        height: 12,
-                                        color: Colors.grey[300],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 20),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                  const Divider(),
+                  const SizedBox(height: 16),
 
-                            // Sample Sections
-                            ...List.generate(4, (index) {
-                              return Padding(
-                                padding: const EdgeInsets.only(bottom: 16),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                  // Preview Content
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          // Template Preview Card
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.grey[100],
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Colors.grey[300]!),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                // Sample Header
+                                Row(
                                   children: [
                                     Container(
-                                      width: 100,
-                                      height: 14,
-                                      color: _getTemplateColor(
-                                        templateNumber,
-                                      ).withOpacity(0.5),
+                                      width: 50,
+                                      height: 50,
+                                      decoration: BoxDecoration(
+                                        color: _getTemplateColor(templateNumber),
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Center(
+                                        child: Icon(
+                                          Icons.person,
+                                          color: Colors.white,
+                                          size: 30,
+                                        ),
+                                      ),
                                     ),
-                                    const SizedBox(height: 8),
-                                    Container(
-                                      width: double.infinity,
-                                      height: 10,
-                                      color: Colors.grey[300],
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Container(
-                                      width: 200,
-                                      height: 10,
-                                      color: Colors.grey[300],
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            width: double.infinity,
+                                            height: 16,
+                                            color: Colors.grey[300],
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Container(
+                                            width: 100,
+                                            height: 12,
+                                            color: Colors.grey[300],
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ],
                                 ),
-                              );
-                            }),
-                          ],
+                                const SizedBox(height: 20),
+
+                                // Sample Sections
+                                ...List.generate(4, (index) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 16),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          width: 100,
+                                          height: 14,
+                                          color: _getTemplateColor(
+                                            templateNumber,
+                                          ).withValues(alpha: 0.5),
+
+                                        ),
+                                        const SizedBox(height: 8),
+                                        Container(
+                                          width: double.infinity,
+                                          height: 10,
+                                          color: Colors.grey[300],
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Container(
+                                          width: 200,
+                                          height: 10,
+                                          color: Colors.grey[300],
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }),
+                              ],
+                            ),
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          // Template Description
+                          Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Template Features:',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  ..._getTemplateFeatures(templateNumber).map(
+                                    (feature) => Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 4,
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.check_circle,
+                                            color: Colors.green,
+                                            size: 16,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Expanded(child: Text(feature)),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  // Action Buttons
+                  Row(
+                    children: [
+                      Expanded(
+                        child: OutlinedButton.icon(
+                          onPressed: () => Navigator.pop(context),
+                          icon: const Icon(Icons.close),
+                          label: const Text('Close'),
                         ),
                       ),
-
-                      const SizedBox(height: 20),
-
-                      // Template Description
-                      Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(16),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'Template Features:',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              ..._getTemplateFeatures(templateNumber).map(
-                                (feature) => Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    vertical: 4,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.check_circle,
-                                        color: Colors.green,
-                                        size: 16,
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Expanded(child: Text(feature)),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: () async {
+                            Navigator.pop(context);
+                            await controller.generateAndSavePdf(
+                              templateNumber: templateNumber,
+                            );
+                            // _showDownloadNotification(templateNumber);
+                          },
+                          icon: const Icon(Icons.download),
+                          label: const Text('Download'),
                         ),
                       ),
                     ],
                   ),
-                ),
-              ),
-
-              const SizedBox(height: 16),
-
-              // Action Buttons
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () => Navigator.pop(context),
-                      icon: const Icon(Icons.close),
-                      label: const Text('Close'),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () async {
-                        Navigator.pop(context);
-                        await controller.generateAndSavePdf(
-                          templateNumber: templateNumber,
-                        );
-                        // _showDownloadNotification(templateNumber);
-                      },
-                      icon: const Icon(Icons.download),
-                      label: const Text('Download'),
-                    ),
-                  ),
                 ],
               ),
-            ],
+            ),
           ),
         );
       },
-    );
-  }
-
-  void _showDownloadNotification(int templateNumber) {
-    Get.snackbar(
-      'Download Started',
-      'Template $templateNumber is being downloaded',
-      snackPosition: SnackPosition.BOTTOM,
-      backgroundColor: Colors.blue,
-      colorText: Colors.white,
-      duration: const Duration(seconds: 2),
-      icon: const Icon(Icons.download, color: Colors.white),
     );
   }
 
@@ -567,17 +569,25 @@ class _TemplateSelectionScreenState extends State<TemplateSelectionScreen> {
   }
 
   Future<void> _showAdThen(VoidCallback onAdCompleted) async {
-    if (!mounted) return;
+    if (!mounted) {
+      debugPrint('Not mounted, skipping ad dialog');
+      onAdCompleted();
+      return;
+    }
 
+    debugPrint('Showing ad dialog');
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => const Center(child: CircularProgressIndicator()),
+      builder: (_) => const Center(
+        child: CircularProgressIndicator(),
+      ),
     );
 
     await Future.delayed(const Duration(seconds: 2));
 
     if (mounted) {
+      debugPrint('Closing ad dialog and executing callback');
       Navigator.pop(context);
       onAdCompleted();
     }

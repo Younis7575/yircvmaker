@@ -66,15 +66,16 @@ class _BannerAdWidgetState extends State<BannerAdWidget> {
 
   @override
   Widget build(BuildContext context) {
-    if (!_isAdLoaded) {
-      return const SizedBox.shrink();
-    }
-
-    return Container(
-      alignment: Alignment.center,
-      width: _bannerAd!.size.width.toDouble(),
-      height: _bannerAd!.size.height.toDouble(),
-      child: AdWidget(ad: _bannerAd!),
+    // always reserve space for the banner; even if it hasn't loaded yet we
+    // keep the same dimensions so that parent layouts don't shift later.
+    final width = _bannerAd?.size.width.toDouble() ?? AdSize.banner.width.toDouble();
+    final height = _bannerAd?.size.height.toDouble() ?? AdSize.banner.height.toDouble();
+    return SizedBox(
+      width: width,
+      height: height,
+      child: _isAdLoaded && _bannerAd != null
+          ? AdWidget(ad: _bannerAd!)
+          : const SizedBox.shrink(),
     );
   }
 }

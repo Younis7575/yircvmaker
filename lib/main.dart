@@ -13,6 +13,8 @@ import 'views/achievements_screen.dart';
 import 'views/hobbies_screen.dart';
 import 'views/preview_screen.dart';
 import 'views/template_selection_screen.dart';
+import 'views/splash_screen.dart';
+import 'views/home_screen.dart';
 import 'ads/app_open_ad_manager.dart';
 import 'widgets/download_progress_widget.dart';
 
@@ -128,9 +130,11 @@ class _PortfolioMakerAppState extends State<PortfolioMakerApp>
           ),
         ),
       ),
-      initialRoute: '/',
+      initialRoute: '/splash',
       getPages: [
+        GetPage(name: '/splash', page: () => const SplashScreen()),
         GetPage(name: '/', page: () =>   FloatingBottomExample()),
+        GetPage(name: '/home', page: () => const HomeScreen()),
         GetPage(name: '/edit-profile', page: () => const EditProfileScreen()),
         GetPage(name: '/skills', page: () => const SkillsScreen()),
         GetPage(name: '/projects', page: () => const ProjectsScreen()),

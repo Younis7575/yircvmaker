@@ -661,8 +661,10 @@ class PortfolioController extends GetxController {
 
   void _loadDownloadHistory() {
     final savedDownloads = StorageService.getDownloadHistory();
+    debugPrint('Loading download history: ${savedDownloads.length} CVs found');
     if (savedDownloads.isNotEmpty) {
       _recentDownloads.value = savedDownloads;
+      debugPrint('Loaded CVs: ${savedDownloads.map((d) => d['templateName']).toList()}');
     }
   }
 
@@ -1143,6 +1145,14 @@ class PortfolioController extends GetxController {
     _saveDownloadHistory();
   }
 
+  // Method to remove a download item by index
+  void removeDownloadItem(int index) {
+    if (index >= 0 && index < _recentDownloads.length) {
+      _recentDownloads.removeAt(index);
+      _saveDownloadHistory();
+    }
+  }
+
   // Save download history to storage
   void _saveDownloadHistory() {
     final completedDownloads = _recentDownloads
@@ -1173,6 +1183,8 @@ class PortfolioController extends GetxController {
     };
 
     _recentDownloads.insert(0, activity);
+    debugPrint('📥 CV Saved: ${activity['templateName']} at $filePath');
+    debugPrint('📊 Total CVs on device: ${_recentDownloads.length}');
     StorageService.saveDownloadHistory(_recentDownloads);
   }
 }

@@ -40,6 +40,50 @@ class HomeScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  // Recently created CVs
+                  Obx(() {
+                    if (controller.recentDownloads.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Your CVs',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        ...controller.recentDownloads.map((d) {
+                          final name = d['templateName'] ?? 'CV';
+                          final path = d['filePath'] ?? '';
+                          final timestamp = d['timestamp'];
+                          return Card(
+                            child: ListTile(
+                              leading: const Icon(Icons.picture_as_pdf),
+                              title: Text(name),
+                              subtitle: timestamp != null
+                                  ? Text(DateTime.parse(timestamp)
+                                      .toLocal()
+                                      .toString())
+                                  : null,
+                              trailing: IconButton(
+                                icon: const Icon(Icons.open_in_new),
+                                onPressed: () {
+                                  // TODO: implement open/view PDF
+                                  debugPrint('Open $path');
+                                },
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                        const SizedBox(height: 24),
+                      ],
+                    );
+                  }),
+
                   // Profile Card
                   Card(
                     child: ListTile(
