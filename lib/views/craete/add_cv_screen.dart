@@ -1,5 +1,5 @@
 import 'package:cvmaker/controllers/portfolio_controller.dart';
-import 'package:cvmaker/views/my_downloads_screen.dart';
+// download screen imported via routes, so explicit import not needed here
 import 'package:cvmaker/widgets/banner_ad_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';

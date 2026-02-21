@@ -1,8 +1,8 @@
-import 'package:cvmaker/views/my_downloads_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../controllers/portfolio_controller.dart';
 import '../widgets/banner_ad_widget.dart';
+
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});

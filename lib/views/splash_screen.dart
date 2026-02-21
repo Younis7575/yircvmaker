@@ -13,6 +13,8 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Future.delayed(const Duration(seconds: 2), () {
+      // after splash we still go to the main container ('/') which now uses the
+      // floating bottom bar; the first tab has been changed to downloads.
       Get.offAllNamed('/');
     });
   }

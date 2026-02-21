@@ -14,7 +14,9 @@ import 'views/hobbies_screen.dart';
 import 'views/preview_screen.dart';
 import 'views/template_selection_screen.dart';
 import 'views/splash_screen.dart';
-import 'views/home_screen.dart';
+import 'views/my_downloads_screen.dart';
+// HomeScreen widget is no longer used as the initial landing page
+
 import 'ads/app_open_ad_manager.dart';
 import 'widgets/download_progress_widget.dart';
 
@@ -133,8 +135,12 @@ class _PortfolioMakerAppState extends State<PortfolioMakerApp>
       initialRoute: '/splash',
       getPages: [
         GetPage(name: '/splash', page: () => const SplashScreen()),
+        // '/' remains the bottom bar container; its first tab will now show downloads
         GetPage(name: '/', page: () =>   FloatingBottomExample()),
-        GetPage(name: '/home', page: () => const HomeScreen()),
+        // '/home' route has been repurposed to point at the downloads screen
+        GetPage(name: '/home', page: () => MyDownloadsScreen()),
+        // alias route for clarity
+        GetPage(name: '/downloads', page: () => MyDownloadsScreen()),
         GetPage(name: '/edit-profile', page: () => const EditProfileScreen()),
         GetPage(name: '/skills', page: () => const SkillsScreen()),
         GetPage(name: '/projects', page: () => const ProjectsScreen()),

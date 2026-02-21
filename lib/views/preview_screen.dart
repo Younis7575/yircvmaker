@@ -7,9 +7,27 @@ import '../widgets/banner_ad_widget.dart';
 class PreviewScreen extends StatelessWidget {
   const PreviewScreen({super.key});
  
+  Color _getTemplateColor(int templateNumber) {
+    switch (templateNumber) {
+      case 1:
+        return Colors.blue;
+      case 2:
+        return Colors.purple;
+      case 3:
+        return Colors.green;
+      case 4:
+        return Colors.orange;
+      case 5:
+        return Colors.teal;
+      default:
+        return Colors.grey;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<PortfolioController>();
+    final templateColor = _getTemplateColor(controller.selectedTemplate);
 
     return Scaffold(
       appBar: AppBar(
@@ -70,16 +88,16 @@ class PreviewScreen extends StatelessWidget {
                                 profile.profileImagePath!.isNotEmpty)
                               CircleAvatar(
                                 radius: 60,
-                                backgroundColor: Colors.grey[800],
+                                backgroundColor: templateColor.withOpacity(0.8),
                                 backgroundImage: FileImage(
                                   File(profile.profileImagePath!),
                                 ),
                               )
                             else
-                              const CircleAvatar(
+                              CircleAvatar(
                                 radius: 60,
-                                backgroundColor: Colors.grey,
-                                child: Icon(Icons.person, size: 60),
+                                backgroundColor: templateColor.withOpacity(0.5),
+                                child: const Icon(Icons.person, size: 60),
                               ),
                             const SizedBox(height: 16),
                             Text(

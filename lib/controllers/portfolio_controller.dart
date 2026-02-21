@@ -597,7 +597,7 @@
 // }
 
 
-import 'package:cvmaker/views/my_downloads_screen.dart';
+// import removed - downloads accessed via named route
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/profile_model.dart';
@@ -641,6 +641,10 @@ class PortfolioController extends GetxController {
   int get selectedTemplate => _selectedTemplate.value;
   Map<String, double> get downloadProgress => _downloadProgress;
   List<Map<String, dynamic>> get recentDownloads => _recentDownloads;
+
+  // Banner shown when a CV download completes
+  final RxBool showDownloadBanner = false.obs;
+  final RxString downloadBannerMessage = ''.obs;
 
   @override
   void onInit() {
@@ -1055,7 +1059,8 @@ class PortfolioController extends GetxController {
           TextButton(
             onPressed: () {
               Get.back();
-              Get.to(() => MyDownloadsScreen());
+              // use named route so the new home screen configuration is respected
+              Get.toNamed('/downloads');
             },
             child: const Text('My Downloads'),
           ),
@@ -1186,6 +1191,13 @@ class PortfolioController extends GetxController {
     debugPrint('📥 CV Saved: ${activity['templateName']} at $filePath');
     debugPrint('📊 Total CVs on device: ${_recentDownloads.length}');
     StorageService.saveDownloadHistory(_recentDownloads);
+
+    // show a temporary banner message at bottom
+    downloadBannerMessage.value = 'Your CV has been downloaded';
+    showDownloadBanner.value = true;
+    Future.delayed(const Duration(seconds: 3), () {
+      showDownloadBanner.value = false;
+    });
   }
 }
 
