@@ -1,7 +1,8 @@
+import 'package:cvmaker/widgets/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/portfolio_controller.dart';
-import '../widgets/banner_ad_widget.dart';
+import '../../controllers/portfolio_controller.dart';
+import '../../widgets/banner_ad_widget.dart';
 
 class HobbiesScreen extends StatelessWidget {
   const HobbiesScreen({super.key});
@@ -12,12 +13,9 @@ class HobbiesScreen extends StatelessWidget {
     final hobbyController = TextEditingController();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Hobbies'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
+          appBar: CustomBlueAppBar(
+        rightText: "Add",
+        onRightTap: () {
               Get.dialog(
                 Dialog(
                   child: Padding(
@@ -74,10 +72,10 @@ class HobbiesScreen extends StatelessWidget {
                 ),
               );
             },
-          ),
-        ],
+        title: "Hobbies",
       ),
-      body: Column(
+      
+    body: Column(
         children: [
           Expanded(
             child: Obx(() {

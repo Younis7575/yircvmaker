@@ -1,9 +1,10 @@
+import 'package:cvmaker/widgets/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:io';
-import '../controllers/portfolio_controller.dart';
-import '../models/profile_model.dart';
-import '../widgets/banner_ad_widget.dart';
+import '../../controllers/portfolio_controller.dart';
+import '../../models/profile_model.dart';
+import '../../widgets/banner_ad_widget.dart';
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -85,15 +86,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final controller = Get.find<PortfolioController>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Profile'),
-        actions: [
-          TextButton(
-            onPressed: _saveProfile,
-            child: const Text('Save'),
-          ),
-        ],
+         appBar: CustomBlueAppBar(
+          rightText: "Add",
+        onRightTap: _saveProfile,
+        title: "Profile",
       ),
+   
       body: Column(
         children: [
           Expanded(

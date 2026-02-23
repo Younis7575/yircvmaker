@@ -1,8 +1,9 @@
+import 'package:cvmaker/widgets/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/portfolio_controller.dart';
-import '../models/education_model.dart';
-import '../widgets/banner_ad_widget.dart';
+import '../../controllers/portfolio_controller.dart';
+import '../../models/education_model.dart';
+import '../../widgets/banner_ad_widget.dart';
 
 class EducationScreen extends StatelessWidget {
   const EducationScreen({super.key});
@@ -12,23 +13,18 @@ class EducationScreen extends StatelessWidget {
     final controller = Get.find<PortfolioController>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Education'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () => Get.toNamed('/add-education'),
-          ),
-        ],
+      appBar: CustomBlueAppBar(
+        rightText: "Add",
+        onRightTap: () => Get.toNamed('/add-education'),
+        title: "Education",
       ),
+
       body: Column(
         children: [
           Expanded(
             child: Obx(() {
               if (controller.educations.isEmpty) {
-                return const Center(
-                  child: Text('No education added yet'),
-                );
+                return const Center(child: Text('No education added yet'));
               }
               return ListView.builder(
                 padding: const EdgeInsets.all(16),
@@ -60,14 +56,17 @@ class EducationScreen extends StatelessWidget {
                         icon: const Icon(Icons.delete, color: Colors.red),
                         onPressed: () {
                           controller.removeEducation(edu.id);
-                          Get.snackbar('Success', 'Education removed',
-                              snackPosition: SnackPosition.BOTTOM,
-                              backgroundColor: Colors.green,
-                              colorText: Colors.white);
+                          Get.snackbar(
+                            'Success',
+                            'Education removed',
+                            snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor: Colors.green,
+                            colorText: Colors.white,
+                          );
                         },
                       ),
-                      onTap: () => Get.toNamed('/add-education',
-                          arguments: edu),
+                      onTap: () =>
+                          Get.toNamed('/add-education', arguments: edu),
                     ),
                   );
                 },
@@ -140,26 +139,25 @@ class _AddEducationScreenState extends State<AddEducationScreen> {
       }
 
       Get.back();
-      Get.snackbar('Success',
-          _isEdit ? 'Education updated' : 'Education added',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green,
-          colorText: Colors.white);
+      Get.snackbar(
+        'Success',
+        _isEdit ? 'Education updated' : 'Education added',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_isEdit ? 'Edit Education' : 'Add Education'),
-        actions: [
-          TextButton(
-            onPressed: _saveEducation,
-            child: const Text('Save'),
-          ),
-        ],
+      appBar: CustomBlueAppBar(
+        rightText: "Add",
+        onRightTap: _saveEducation,
+        title: _isEdit ? 'Edit Education' : 'Add Education',
       ),
+
       body: Column(
         children: [
           Expanded(

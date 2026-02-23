@@ -1,70 +1,70 @@
+import 'package:cvmaker/widgets/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/portfolio_controller.dart';
-import '../models/project_model.dart';
-import '../widgets/banner_ad_widget.dart';
+import '../../controllers/portfolio_controller.dart';
+import '../../models/experience_model.dart';
+import '../../widgets/banner_ad_widget.dart';
 
-class ProjectsScreen extends StatelessWidget {
-  const ProjectsScreen({super.key});
+class ExperienceScreen extends StatelessWidget {
+  const ExperienceScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<PortfolioController>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Projects'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () => Get.toNamed('/add-project'),
-          ),
-        ],
+        appBar: CustomBlueAppBar(
+        rightText: "Add",
+        onRightTap: () => Get.toNamed('/add-experience'),
+        title: "Experience",
       ),
+    
       body: Column(
         children: [
           Expanded(
             child: Obx(() {
-              if (controller.projects.isEmpty) {
+              if (controller.experiences.isEmpty) {
                 return const Center(
-                  child: Text('No projects added yet'),
+                  child: Text('No experience added yet'),
                 );
               }
               return ListView.builder(
                 padding: const EdgeInsets.all(16),
-                itemCount: controller.projects.length,
+                itemCount: controller.experiences.length,
                 itemBuilder: (context, index) {
-                  final project = controller.projects[index];
+                  final exp = controller.experiences[index];
                   return Card(
                     margin: const EdgeInsets.only(bottom: 8),
                     child: ListTile(
-                      title: Text(project.name),
+                      title: Text(exp.jobTitle),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(project.description),
+                          Text(exp.companyName),
                           const SizedBox(height: 4),
                           Text(
-                            'Tech: ${project.technologies}',
+                            exp.duration,
                             style: TextStyle(
                               fontSize: 12,
                               color: Colors.grey[400],
                             ),
                           ),
+                          const SizedBox(height: 4),
+                          Text(exp.description),
                         ],
                       ),
                       trailing: IconButton(
                         icon: const Icon(Icons.delete, color: Colors.red),
                         onPressed: () {
-                          controller.removeProject(project.id);
-                          Get.snackbar('Success', 'Project removed',
+                          controller.removeExperience(exp.id);
+                          Get.snackbar('Success', 'Experience removed',
                               snackPosition: SnackPosition.BOTTOM,
                               backgroundColor: Colors.green,
                               colorText: Colors.white);
                         },
                       ),
-                      onTap: () => Get.toNamed('/add-project',
-                          arguments: project),
+                      onTap: () => Get.toNamed('/add-experience',
+                          arguments: exp),
                     ),
                   );
                 },
@@ -78,67 +78,65 @@ class ProjectsScreen extends StatelessWidget {
   }
 }
 
-class AddProjectScreen extends StatefulWidget {
-  const AddProjectScreen({super.key});
+class AddExperienceScreen extends StatefulWidget {
+  const AddExperienceScreen({super.key});
 
   @override
-  State<AddProjectScreen> createState() => _AddProjectScreenState();
+  State<AddExperienceScreen> createState() => _AddExperienceScreenState();
 }
 
-class _AddProjectScreenState extends State<AddProjectScreen> {
+class _AddExperienceScreenState extends State<AddExperienceScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
+  final _jobTitleController = TextEditingController();
+  final _companyController = TextEditingController();
+  final _durationController = TextEditingController();
   final _descriptionController = TextEditingController();
-  final _technologiesController = TextEditingController();
-  final _linkController = TextEditingController();
   bool _isEdit = false;
-  String? _projectId;
+  String? _experienceId;
 
   @override
   void initState() {
     super.initState();
     final args = Get.arguments;
-    if (args != null && args is ProjectModel) {
+    if (args != null && args is ExperienceModel) {
       _isEdit = true;
-      _projectId = args.id;
-      _nameController.text = args.name;
+      _experienceId = args.id;
+      _jobTitleController.text = args.jobTitle;
+      _companyController.text = args.companyName;
+      _durationController.text = args.duration;
       _descriptionController.text = args.description;
-      _technologiesController.text = args.technologies;
-      _linkController.text = args.projectLink ?? '';
     }
   }
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _jobTitleController.dispose();
+    _companyController.dispose();
+    _durationController.dispose();
     _descriptionController.dispose();
-    _technologiesController.dispose();
-    _linkController.dispose();
     super.dispose();
   }
 
-  void _saveProject() {
+  void _saveExperience() {
     if (_formKey.currentState!.validate()) {
       final controller = Get.find<PortfolioController>();
-      final project = ProjectModel(
-        id: _projectId ?? DateTime.now().millisecondsSinceEpoch.toString(),
-        name: _nameController.text.trim(),
+      final experience = ExperienceModel(
+        id: _experienceId ?? DateTime.now().millisecondsSinceEpoch.toString(),
+        jobTitle: _jobTitleController.text.trim(),
+        companyName: _companyController.text.trim(),
+        duration: _durationController.text.trim(),
         description: _descriptionController.text.trim(),
-        technologies: _technologiesController.text.trim(),
-        projectLink: _linkController.text.trim().isEmpty
-            ? null
-            : _linkController.text.trim(),
       );
 
       if (_isEdit) {
-        controller.updateProject(project);
+        controller.updateExperience(experience);
       } else {
-        controller.addProject(project);
+        controller.addExperience(experience);
       }
 
       Get.back();
       Get.snackbar('Success',
-          _isEdit ? 'Project updated' : 'Project added',
+          _isEdit ? 'Experience updated' : 'Experience added',
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.green,
           colorText: Colors.white);
@@ -148,15 +146,12 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_isEdit ? 'Edit Project' : 'Add Project'),
-        actions: [
-          TextButton(
-            onPressed: _saveProject,
-            child: const Text('Save'),
-          ),
-        ],
+             appBar: CustomBlueAppBar(
+        rightText: "Add",
+        onRightTap: _saveExperience,
+        title: _isEdit ? 'Edit Experience' : 'Add Experience'
       ),
+     
       body: Column(
         children: [
           Expanded(
@@ -168,15 +163,46 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     TextFormField(
-                      controller: _nameController,
+                      controller: _jobTitleController,
                       decoration: const InputDecoration(
-                        labelText: 'Project Name',
+                        labelText: 'Job Title',
                         border: OutlineInputBorder(),
                         prefixIcon: Icon(Icons.work),
                       ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
-                          return 'Please enter project name';
+                          return 'Please enter job title';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _companyController,
+                      decoration: const InputDecoration(
+                        labelText: 'Company Name',
+                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.business),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please enter company name';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _durationController,
+                      decoration: const InputDecoration(
+                        labelText: 'Duration',
+                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.calendar_today),
+                        hintText: 'e.g., Jan 2020 - Dec 2022',
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please enter duration';
                         }
                         return null;
                       },
@@ -189,39 +215,13 @@ class _AddProjectScreenState extends State<AddProjectScreen> {
                         border: OutlineInputBorder(),
                         prefixIcon: Icon(Icons.description),
                       ),
-                      maxLines: 4,
+                      maxLines: 5,
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return 'Please enter description';
                         }
                         return null;
                       },
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _technologiesController,
-                      decoration: const InputDecoration(
-                        labelText: 'Technologies Used',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.code),
-                        hintText: 'e.g., Flutter, Dart, Firebase',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Please enter technologies';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _linkController,
-                      decoration: const InputDecoration(
-                        labelText: 'Project Link (Optional)',
-                        border: OutlineInputBorder(),
-                        prefixIcon: Icon(Icons.link),
-                      ),
-                      keyboardType: TextInputType.url,
                     ),
                   ],
                 ),

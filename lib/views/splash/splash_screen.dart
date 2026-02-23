@@ -15,7 +15,7 @@ class _SplashScreenState extends State<SplashScreen> {
     Future.delayed(const Duration(seconds: 2), () {
       // after splash we still go to the main container ('/') which now uses the
       // floating bottom bar; the first tab has been changed to downloads.
-      Get.offAllNamed('/');
+      Get.offAllNamed('/home');
     });
   }
 
@@ -27,7 +27,7 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Image.asset(
-              'assets/logo.png',
+              'assets/app_logo.png',
               width: 120,
               height: 120,
             ),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:io';
-import '../controllers/portfolio_controller.dart';
-import '../widgets/banner_ad_widget.dart';
+import '../../controllers/portfolio_controller.dart';
+import '../../widgets/banner_ad_widget.dart';
 
 class PreviewScreen extends StatelessWidget {
   const PreviewScreen({super.key});
@@ -31,7 +31,7 @@ class PreviewScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Portfolio Preview'),
+        title: const Text('CV Preview'),
         actions: [
           Obx(() => IconButton(
                 icon: controller.isLoading
@@ -215,7 +215,7 @@ class PreviewScreen extends StatelessWidget {
                                 runSpacing: 8,
                                 children: controller.skills.map((skill) {
                                   return Chip(
-                                    label: Text(skill.name),
+                                    label: Text(skill.name,style: const TextStyle(color: Colors.white),),
                                     backgroundColor: Colors.grey[800],
                                   );
                                 }).toList(),
@@ -481,7 +481,7 @@ class PreviewScreen extends StatelessWidget {
                                 runSpacing: 8,
                                 children: controller.hobbies.map((hobby) {
                                   return Chip(
-                                    label: Text(hobby.name),
+                                    label: Text(hobby.name,style: const TextStyle(color: Colors.white),),
                                     backgroundColor: Colors.grey[800],
                                   );
                                 }).toList(),

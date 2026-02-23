@@ -1,6 +1,6 @@
 import 'package:cvmaker/views/bottombar/bottom_screens.dart';
 import 'package:cvmaker/views/craete/add_cv_screen.dart';
-import 'package:cvmaker/views/my_downloads_screen.dart';
+import 'package:cvmaker/views/downlaod/my_downloads_screen.dart';
 // home_screen.dart is no longer needed here since downloads is the new starting page
 import 'package:flutter/material.dart';
 import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';

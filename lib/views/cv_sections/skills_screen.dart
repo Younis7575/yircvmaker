@@ -1,7 +1,8 @@
+import 'package:cvmaker/widgets/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/portfolio_controller.dart';
-import '../widgets/banner_ad_widget.dart';
+import '../../controllers/portfolio_controller.dart';
+import '../../widgets/banner_ad_widget.dart';
 
 class SkillsScreen extends StatelessWidget {
   const SkillsScreen({super.key});
@@ -12,12 +13,9 @@ class SkillsScreen extends StatelessWidget {
     final skillController = TextEditingController();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Skills'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () {
+            appBar: CustomBlueAppBar(
+        rightText: "Add",
+        onRightTap:  () {
               Get.dialog(
                 Dialog(
                   child: Padding(
@@ -74,10 +72,9 @@ class SkillsScreen extends StatelessWidget {
                 ),
               );
             },
-          ),
-        ],
+        title: "Skills",
       ),
-      body: Column(
+    body: Column(
         children: [
           Expanded(
             child: Obx(() {

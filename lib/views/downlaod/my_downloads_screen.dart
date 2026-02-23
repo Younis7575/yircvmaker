@@ -1,6 +1,7 @@
+import 'package:cvmaker/widgets/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/portfolio_controller.dart';
+import '../../controllers/portfolio_controller.dart';
 import 'dart:io';
 import 'package:open_file/open_file.dart';
 
@@ -12,15 +13,12 @@ class MyDownloadsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('My Downloads'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.delete_sweep),
-            onPressed: _showClearAllDialog,
-          ),
-        ],
+          appBar: CustomBlueAppBar(
+        rightText: "Delete",
+        onRightTap: _showClearAllDialog,
+        title: "My Downloads",
       ),
+     
       body: Obx(() {
         final downloads = controller.recentDownloads;
         

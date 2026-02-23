@@ -1,4 +1,5 @@
 import 'package:cvmaker/controllers/portfolio_controller.dart';
+import 'package:cvmaker/widgets/app_bar.dart';
 // download screen imported via routes, so explicit import not needed here
 import 'package:cvmaker/widgets/banner_ad_widget.dart';
 import 'package:flutter/material.dart';
@@ -12,27 +13,8 @@ class AddCvScreen extends StatelessWidget {
     final controller = Get.find<PortfolioController>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Portfolio Maker'),
-        centerTitle: true,
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.download),
-            // onPressed: () => Get.to(() => MyDownloadsScreen()),
-              onPressed: () async {
-    try {
-      final controller = Get.find<PortfolioController>();
-      print('Testing PDF generation...');
-      await controller.generateAndSavePdf(templateNumber: 1);
-    } catch (e) {
-      print('Test failed: $e');
-    }
-  },
-          ),
-        ],
-      ),
-      body: Column(
+      appBar: const CustomBlueAppBar(title: "Add CV"),
+    body: Column(
         children: [
           Expanded(
             child: SingleChildScrollView(

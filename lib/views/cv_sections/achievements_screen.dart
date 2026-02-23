@@ -1,8 +1,9 @@
+import 'package:cvmaker/widgets/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/portfolio_controller.dart';
-import '../models/achievement_model.dart';
-import '../widgets/banner_ad_widget.dart';
+import '../../controllers/portfolio_controller.dart';
+import '../../models/achievement_model.dart';
+import '../../widgets/banner_ad_widget.dart';
 
 class AchievementsScreen extends StatelessWidget {
   const AchievementsScreen({super.key});
@@ -12,23 +13,17 @@ class AchievementsScreen extends StatelessWidget {
     final controller = Get.find<PortfolioController>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Achievements'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () => Get.toNamed('/add-achievement'),
-          ),
-        ],
+      appBar: CustomBlueAppBar(
+        rightText: "Add",
+        onRightTap: () => Get.toNamed('/add-achievement'),
+        title: "Achievements",
       ),
       body: Column(
         children: [
           Expanded(
             child: Obx(() {
               if (controller.achievements.isEmpty) {
-                return const Center(
-                  child: Text('No achievements added yet'),
-                );
+                return const Center(child: Text('No achievements added yet'));
               }
               return ListView.builder(
                 padding: const EdgeInsets.all(16),
@@ -57,14 +52,17 @@ class AchievementsScreen extends StatelessWidget {
                         icon: const Icon(Icons.delete, color: Colors.red),
                         onPressed: () {
                           controller.removeAchievement(ach.id);
-                          Get.snackbar('Success', 'Achievement removed',
-                              snackPosition: SnackPosition.BOTTOM,
-                              backgroundColor: Colors.green,
-                              colorText: Colors.white);
+                          Get.snackbar(
+                            'Success',
+                            'Achievement removed',
+                            snackPosition: SnackPosition.BOTTOM,
+                            backgroundColor: Colors.green,
+                            colorText: Colors.white,
+                          );
                         },
                       ),
-                      onTap: () => Get.toNamed('/add-achievement',
-                          arguments: ach),
+                      onTap: () =>
+                          Get.toNamed('/add-achievement', arguments: ach),
                     ),
                   );
                 },
@@ -133,26 +131,25 @@ class _AddAchievementScreenState extends State<AddAchievementScreen> {
       }
 
       Get.back();
-      Get.snackbar('Success',
-          _isEdit ? 'Achievement updated' : 'Achievement added',
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.green,
-          colorText: Colors.white);
+      Get.snackbar(
+        'Success',
+        _isEdit ? 'Achievement updated' : 'Achievement added',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_isEdit ? 'Edit Achievement' : 'Add Achievement'),
-        actions: [
-          TextButton(
-            onPressed: _saveAchievement,
-            child: const Text('Save'),
-          ),
-        ],
+             appBar: CustomBlueAppBar(
+        rightText: "Add",
+        onRightTap: _saveAchievement,
+        title: _isEdit ? 'Edit Achievement' : 'Add Achievement'
       ),
+    
       body: Column(
         children: [
           Expanded(
