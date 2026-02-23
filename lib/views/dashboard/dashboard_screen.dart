@@ -246,170 +246,178 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   const SizedBox(height: 20),
 
                   /// Recent Downloads Section (Horizontally scrollable)
-                  Obx(() {
-                    final downloads = controller.recentDownloads;
+ Obx(() {
+  final downloads = controller.recentDownloads;
 
-                    if (downloads.isNotEmpty) {
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  if (downloads.isNotEmpty) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        /// Header
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "Recent Downloads",
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              TextButton(
+                onPressed: () => Get.to(() => MyDownloadsScreen()),
+                child: const Text(
+                  "See All",
+                  style: TextStyle(color: Color(0xff0048ff)),
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 10),
+
+        /// Downloads list
+        SizedBox(
+          height: 160,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: downloads.length > 5 ? 5 : downloads.length,
+            itemBuilder: (context, index) {
+              final download = downloads[index];
+              final filePath = download['filePath'] as String?;
+              final file = filePath != null ? File(filePath) : null;
+              final fileExists = file?.existsSync() ?? false;
+
+              return GestureDetector(
+                onTap: fileExists ? () => _openDownloadedFile(filePath!) : null,
+                child: Container(
+                  width: 140,
+                  margin: const EdgeInsets.only(right: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(18),
+                    boxShadow: const [
+                      BoxShadow(blurRadius: 8, color: Colors.black12),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        height: 100,
+                        decoration: BoxDecoration(
+                          color: _getTemplateColor(download['templateNumber']),
+                          borderRadius: const BorderRadius.vertical(
+                            top: Radius.circular(18),
+                          ),
+                        ),
+                        child: Center(
+                          child: Icon(
+                            Icons.picture_as_pdf,
+                            size: 50,
+                            color: Colors.white.withOpacity(0.8),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              download['templateName'] ?? 'CV',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 4),
+                            Row(
                               children: [
-                                const Text(
-                                  "Recent Downloads",
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                Icon(
+                                  Icons.access_time,
+                                  size: 12,
+                                  color: Colors.grey[600],
                                 ),
-                                TextButton(
-                                  onPressed: () =>
-                                      Get.to(() => MyDownloadsScreen()),
-                                  child: const Text(
-                                    "See All",
-                                    style: TextStyle(color: Color(0xff0048ff)),
+                                const SizedBox(width: 4),
+                                Expanded(
+                                  child: Text(
+                                    _formatDate(download['timestamp']),
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: Colors.grey[600],
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                          const SizedBox(height: 10),
-                          SizedBox(
-                            height: 160,
-                            child: ListView.builder(
-                              scrollDirection: Axis.horizontal,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                              ),
-                              itemCount: downloads.length > 5
-                                  ? 5
-                                  : downloads.length,
-                              itemBuilder: (context, index) {
-                                final download = downloads[index];
-                                final filePath =
-                                    download['filePath'] as String?;
-                                final file = filePath != null
-                                    ? File(filePath)
-                                    : null;
-                                final fileExists = file?.existsSync() ?? false;
-
-                                return GestureDetector(
-                                  onTap: fileExists
-                                      ? () => _openDownloadedFile(filePath!)
-                                      : null,
-                                  child: Container(
-                                    width: 140,
-                                    margin: const EdgeInsets.only(right: 12),
-                                    decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(18),
-                                      boxShadow: const [
-                                        BoxShadow(
-                                          blurRadius: 8,
-                                          color: Colors.black12,
-                                        ),
-                                      ],
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          height: 100,
-                                          decoration: BoxDecoration(
-                                            color: _getTemplateColor(
-                                              download['templateNumber'],
-                                            ),
-                                            borderRadius:
-                                                const BorderRadius.vertical(
-                                                  top: Radius.circular(18),
-                                                ),
-                                          ),
-                                          child: Center(
-                                            child: Icon(
-                                              Icons.picture_as_pdf,
-                                              size: 50,
-                                              color: Colors.white.withOpacity(
-                                                0.8,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(10),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                download['templateName'] ??
-                                                    'CV',
-                                                style: const TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 14,
-                                                ),
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                              const SizedBox(height: 4),
-                                              Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.access_time,
-                                                    size: 12,
-                                                    color: Colors.grey[600],
-                                                  ),
-                                                  const SizedBox(width: 4),
-                                                  Expanded(
-                                                    child: Text(
-                                                      _formatDate(
-                                                        download['timestamp'],
-                                                      ),
-                                                      style: TextStyle(
-                                                        fontSize: 10,
-                                                        color: Colors.grey[600],
-                                                      ),
-                                                      maxLines: 1,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              if (!fileExists)
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                        top: 4,
-                                                      ),
-                                                  child: Text(
-                                                    'File missing',
-                                                    style: TextStyle(
-                                                      fontSize: 10,
-                                                      color: Colors.red[400],
-                                                    ),
-                                                  ),
-                                                ),
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
+                            if (!fileExists)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 4),
+                                child: Text(
+                                  'File missing',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: Colors.red[400],
                                   ),
-                                );
-                              },
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                        ],
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  }),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 20),
+      ],
+    );
+  }
 
+  /// EMPTY STATE
+  return Padding(
+    padding: const EdgeInsets.all(16),
+    child: Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Icon(
+          Icons.download_done_outlined,
+          size: 80,
+          color: Colors.grey[400],
+        ),
+        const SizedBox(height: 16),
+        const Text(
+          'No Downloads Yet',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 8),
+        const Text(
+          'All your downloaded CVs will appear here.',
+          style: TextStyle(
+            fontSize: 14,
+            color: Colors.grey,
+          ),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 16), 
+      ],
+    ),
+  );
+}),
                   /// Free Templates
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),

@@ -14,8 +14,8 @@ class AchievementsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: CustomBlueAppBar(
-        rightText: "Add",
-        onRightTap: () => Get.toNamed('/add-achievement'),
+        rightText: "Add", 
+        onRightTap: () => Get.to(() =>   AddAchievementScreen()),
         title: "Achievements",
       ),
       body: Column(

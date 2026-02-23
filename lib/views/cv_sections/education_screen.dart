@@ -14,8 +14,8 @@ class EducationScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: CustomBlueAppBar(
-        rightText: "Add",
-        onRightTap: () => Get.toNamed('/add-education'),
+        rightText: "Add", 
+        onRightTap: () => Get.to(() => const AddEducationScreen()),
         title: "Education",
       ),
 

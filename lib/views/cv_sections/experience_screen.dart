@@ -14,8 +14,8 @@ class ExperienceScreen extends StatelessWidget {
 
     return Scaffold(
         appBar: CustomBlueAppBar(
-        rightText: "Add",
-        onRightTap: () => Get.toNamed('/add-experience'),
+        rightText: "Add", 
+         onRightTap: () => Get.to(() => const AddExperienceScreen()),
         title: "Experience",
       ),
     

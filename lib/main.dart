@@ -380,6 +380,7 @@ class PortfolioMakerApp extends StatelessWidget {
         GetPage(
             name: '/projects',
             page: () => const ProjectsScreen()),
+            
 
         GetPage(
             name: '/experience',

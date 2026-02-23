@@ -77,14 +77,21 @@ class CustomBlueAppBar extends StatelessWidget implements PreferredSizeWidget {
             ? [
                 Padding(
                   padding: const EdgeInsets.only(right: 12),
-                  child: TextButton(
-                    onPressed: onRightTap,
-                    child: Text(
-                      rightText!,
-                      style: const TextStyle(
-                        color: Color.fromARGB(255, 117, 254, 122),
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: onRightTap, // ✅ ensures tap works
+                      borderRadius: BorderRadius.circular(8),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                        child: Text(
+                          rightText!,
+                          style: const TextStyle(
+                            color: Color.fromARGB(255, 117, 254, 122),
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
                     ),
                   ),

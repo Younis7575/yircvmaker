@@ -15,7 +15,7 @@ class ProjectsScreen extends StatelessWidget {
     return Scaffold(
             appBar: CustomBlueAppBar(
         rightText: "Add",
-        onRightTap: () => Get.toNamed('/add-project'),
+       onRightTap: () => Get.to(() => const AddProjectScreen()),
         title: "Projects",
       ),
       
